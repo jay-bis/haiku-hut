@@ -14,11 +14,30 @@ model Poem {
   content   String?
   authorId  Int
   isHaiku   Boolean  @default(false)
-  author    User     @relation(fields: [authorId], references: [id])
 }
 
 model User {
-  id    Int     @default(autoincrement()) @id
-  name  String?
-  email String  @unique
+  id                                                     Int                @default(autoincrement()) @id
+  name                                                   String?
+  email                                                  String             @unique
+  profileid                                              Int?
+}
+
+model profile {
+  id      Int     @default(autoincrement()) @id
+  bio     String?
+  favpoem String?
+}
+
+model userrelationship {
+  id                                         Int    @default(autoincrement()) @id
+  relatinguserid                             Int
+  relateduserid                              Int
+  relationshiptype                           status
+}
+
+enum status {
+  blocked
+  friend
+  pending
 }

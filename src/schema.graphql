@@ -12,6 +12,7 @@ type User {
     id: ID!
     name: String!
     email: String!
+    profileid: ID
 }
 
 type Poem {
@@ -20,6 +21,24 @@ type Poem {
     content: String
     createdAt: String
     authorId: Int!
-    author: User
     isHaiku: Boolean!
+}
+
+type profile {
+    id: ID!
+    bio: String
+    favpoem: String
+}
+
+type userrelationship {
+    id: ID!
+    relatinguserid: ID!
+    relateduserid: ID!
+    relationshiptype: status!
+}
+
+enum status {
+    BLOCKED
+    FRIEND
+    PENDING
 }
