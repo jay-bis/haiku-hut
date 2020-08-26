@@ -7,6 +7,9 @@ const resolvers = {
     feed: async (parent, args, context) => {
         return context.prisma.poem.findMany()
       },
+    users: async (parent, args, context) => {
+        return context.prisma.user.findMany()
+    }
   },
   Mutation: {
     post: (parent, args, context, info) => {

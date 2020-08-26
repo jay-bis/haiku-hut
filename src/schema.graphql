@@ -1,6 +1,7 @@
 type Query {
   info: String!
   feed: [Poem!]!
+  users: [User!]!
 }
 
 type Mutation {
@@ -11,7 +12,6 @@ type User {
     id: ID!
     name: String!
     email: String!
-    poems: [Poem!]!
 }
 
 type Poem {
@@ -21,4 +21,5 @@ type Poem {
     createdAt: String
     authorId: Int!
     author: User
+    isHaiku: Boolean!
 }
