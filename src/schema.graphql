@@ -1,18 +1,25 @@
 type Query {
-  info: String!
   feed: [Poem!]!
   users: [User!]!
+  findUser(id: Int!): User
+  findUserByName(name: String!): [User]
+  findUserByEmail(email: String!): User
+  findPoem(id: Int!): Poem
+  findPoemByTitle(title: String!): [Poem]
 }
 
 type Mutation {
-    post(title: String!, content: String!, authorId: Int!): Poem!
+    post(title: String!, content: String!): Poem!
+    signup(name: String!, password: String!, email: String!): AuthPayload
+    login(email: String!, password: String!): AuthPayload
 }
 
 type User {
     id: ID!
-    name: String!
+    name: String
     email: String!
     profileid: ID
+    passhash: String
 }
 
 type Poem {
@@ -35,6 +42,11 @@ type userrelationship {
     relatinguserid: ID!
     relateduserid: ID!
     relationshiptype: status!
+}
+
+type AuthPayload {
+  token: String
+  user: User
 }
 
 enum status {
