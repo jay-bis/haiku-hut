@@ -50,8 +50,27 @@ const login = async (parent, args, context, info) => {
     }
 }
 
+const createProfile = async (parent, args, context, info) => {
+    const profile = context.prisma.profile.create({
+        data: {
+            favpoem: args.favpoem,
+            bio: args.bio
+        }
+    })
+
+    const userId = getUserId(context)
+
+    context.prisma.user.update({
+        where: { id: userId },
+        data: { profileid: profile.id }
+    })
+    
+    return profile
+}
+
 module.exports = {
     post,
     signup,
-    login
+    login,
+    createProfile
 }

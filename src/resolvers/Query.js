@@ -6,6 +6,10 @@ const users = async (parent, args, context) => {
     return await context.prisma.user.findMany()
 }
 
+const profiles = async (parent, args, context) => {
+    return await context.prisma.profile.findMany()
+}
+
 const findUser = async (parent, args, context) => {
     return await context.prisma.user.findOne({
         where: {
@@ -55,5 +59,6 @@ module.exports = {
     findUser,
     findPoem,
     findPoemByTitle,
-    findUserByEmail
+    findUserByEmail,
+    profiles
 }

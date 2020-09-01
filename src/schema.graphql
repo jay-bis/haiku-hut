@@ -6,12 +6,16 @@ type Query {
   findUserByEmail(email: String!): User
   findPoem(id: Int!): Poem
   findPoemByTitle(title: String!): [Poem]
+  profiles: [profile!]!
 }
 
 type Mutation {
     post(title: String!, content: String!): Poem!
     signup(name: String!, password: String!, email: String!): AuthPayload
     login(email: String!, password: String!): AuthPayload
+    createProfile(favpoem: String!, bio: String!): profile
+    sendFriendRequest(senderId: Int!, friendId: Int!): Boolean
+    acceptFriendRequest(relatedUserId: Int!): Boolean
 }
 
 type User {
