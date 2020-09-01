@@ -1,17 +1,29 @@
 type Query {
-  info: String!
   feed: [Poem!]!
+  users: [User!]!
+  findUser(id: Int!): User
+  findUserByName(name: String!): [User]
+  findUserByEmail(email: String!): User
+  findPoem(id: Int!): Poem
+  findPoemByTitle(title: String!): [Poem]
+  profiles: [profile!]!
 }
 
 type Mutation {
-    post(title: String!, content: String!, authorId: Int!): Poem!
+    post(title: String!, content: String!): Poem!
+    signup(name: String!, password: String!, email: String!): AuthPayload
+    login(email: String!, password: String!): AuthPayload
+    createProfile(favpoem: String!, bio: String!): profile
+    sendFriendRequest(senderId: Int!, friendId: Int!): Boolean
+    acceptFriendRequest(relatedUserId: Int!): Boolean
 }
 
 type User {
     id: ID!
-    name: String!
+    name: String
     email: String!
-    poems: [Poem!]!
+    profileid: ID
+    passhash: String
 }
 
 type Poem {
@@ -20,5 +32,29 @@ type Poem {
     content: String
     createdAt: String
     authorId: Int!
-    author: User
+    isHaiku: Boolean!
+}
+
+type profile {
+    id: ID!
+    bio: String
+    favpoem: String
+}
+
+type userrelationship {
+    id: ID!
+    relatinguserid: ID!
+    relateduserid: ID!
+    relationshiptype: status!
+}
+
+type AuthPayload {
+  token: String
+  user: User
+}
+
+enum status {
+    BLOCKED
+    FRIEND
+    PENDING
 }

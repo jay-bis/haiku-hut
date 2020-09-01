@@ -13,12 +13,40 @@ model Poem {
   createdAt DateTime @default(now())
   content   String?
   authorId  Int
+  isHaiku   Boolean  @default(false)
   author    User     @relation(fields: [authorId], references: [id])
 }
 
 model User {
-  id    Int     @default(autoincrement()) @id
-  name  String?
-  email String  @unique
-  poems Poem[]
+  id                                                     Int                @default(autoincrement()) @id
+  name                                                   String?
+  email                                                  String             @unique
+  profileid                                              Int?
+  passhash                                               String?
+  profile                                                profile?           @relation(fields: [profileid], references: [id])
+  poems                                                  Poem[]
+  friendIds                                              userrelationship[] @relation("initialFriends")
+  myIdInFriendsLists                                     userrelationship[] @relation("otherFriends")
+}
+
+model profile {
+  id      Int     @default(autoincrement()) @id
+  bio     String?
+  favpoem String?
+  author  User[]
+}
+
+model userrelationship {
+  id                                         Int    @default(autoincrement()) @id
+  relatinguserid                             Int
+  relateduserid                              Int
+  relationshiptype                           status
+  friendToSearch                             User   @relation("initialFriends", fields: [relateduserid], references: [id])
+  friendInList                               User   @relation("otherFriends", fields: [relatinguserid], references: [id])
+}
+
+enum status {
+  blocked
+  friend
+  pending
 }
