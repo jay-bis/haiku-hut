@@ -1,13 +1,25 @@
-import { StatusBar } from 'expo-status-bar';
+import {ApolloProvider} from '@apollo/react-hooks';
+import ApolloClient from 'apollo-boost';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import * as eva from '@eva-design/eva';
+import { ApplicationProvider, IconRegistry } from '@ui-kitten/components';
+import { EvaIconsPack } from '@ui-kitten/eva-icons';
+
+import AppNavigator from './components/Navigator';
+
+const client = new ApolloClient({
+  uri: 'http://192.168.0.170:4000/',
+});
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <ApolloProvider client={client}>
+      <ApplicationProvider {...eva} theme={eva.light}>
+      <IconRegistry icons={EvaIconsPack}/>
+        <AppNavigator />
+      </ApplicationProvider>
+    </ApolloProvider>
   );
 }
 
