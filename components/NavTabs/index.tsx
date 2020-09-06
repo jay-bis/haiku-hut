@@ -1,5 +1,4 @@
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
 import { BottomNavigation, BottomNavigationTab, Icon } from '@ui-kitten/components';
 
 export interface Props {

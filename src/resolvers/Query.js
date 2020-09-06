@@ -1,5 +1,9 @@
 const feed = async (parent, args, context) => {
-    return await context.prisma.poem.findMany()  
+    return await context.prisma.poem.findMany({
+        include: {
+            author: true
+        }
+    })  
 }
 
 const users = async (parent, args, context) => {
@@ -47,7 +51,12 @@ const findPoem = async (parent, args, context) => {
 const findPoemByTitle = async (parent, args, context) => {
     return await context.prisma.poem.findMany({
         where: {
-            title: args.title
+            title: {
+                contains: args.title
+            }
+        },
+        include: {
+            author: true
         }
     })
 }

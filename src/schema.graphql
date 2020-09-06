@@ -5,7 +5,7 @@ type Query {
   findUserByName(name: String!): [User]
   findUserByEmail(email: String!): User
   findPoem(id: Int!): Poem
-  findPoemByTitle(title: String!): [Poem]
+  findPoemByTitle(title: String): [Poem]
   profiles: [profile!]!
 }
 
@@ -33,6 +33,7 @@ type Poem {
     createdAt: String
     authorId: Int!
     isHaiku: Boolean!
+    author: User
 }
 
 type profile {

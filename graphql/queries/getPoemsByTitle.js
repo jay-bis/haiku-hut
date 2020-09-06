@@ -1,8 +1,8 @@
 import {gql} from 'apollo-boost';
 
-export const GET_ALL_POEMS = gql`
-  query poems {
-    feed {
+export const GET_POEMS_BY_TITLE = gql`
+  query findPoemByTitle($title: String!) {
+    findPoemByTitle(title: $title) {
       id
       title
       content
