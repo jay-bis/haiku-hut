@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, StyleSheet, Animated } from 'react-native';
-import { Button, Card, Modal, Text, Input, useTheme } from '@ui-kitten/components';
+import { StyleSheet, Animated } from 'react-native';
+import { Button, Card, Modal, Text, Input, Icon, Layout } from '@ui-kitten/components';
 
 // old import
 const syllable = require('syllable');
@@ -9,6 +9,26 @@ export interface Props {
     visible: Boolean,
     setVisible: Function
 }
+
+export interface PropsIcon {
+    props?: Object
+}
+
+const HaikuIcon: React.FC<PropsIcon> = props => (
+    <Icon 
+        {...props}
+        name='checkmark-circle-2-outline'
+        fill='#133A03'
+    />
+);
+
+const NonHaikuIcon: React.FC<PropsIcon> = props => (
+    <Icon
+        {...props}
+        name='heart-outline'
+        fill='#4A052D'
+    />
+)
 
 const AddPoemModal: React.FC<Props> = ({ visible, setVisible }) => {
 
@@ -21,7 +41,7 @@ const AddPoemModal: React.FC<Props> = ({ visible, setVisible }) => {
                 fadeAnimation,
                 {
                     toValue: 1,
-                    duration: 1000,
+                    duration: 700,
                     useNativeDriver: true
                 },
             ).start();
@@ -29,7 +49,7 @@ const AddPoemModal: React.FC<Props> = ({ visible, setVisible }) => {
                 moveAnimation,
                 {
                     toValue: 1,
-                    duration: 1000,
+                    duration: 700,
                     useNativeDriver: true
                 }
             ).start();
@@ -47,8 +67,6 @@ const AddPoemModal: React.FC<Props> = ({ visible, setVisible }) => {
         }]
     }
 
-    const theme = useTheme();
-
     const [line1, setLine1] = React.useState<String>('');
     const [line1Color, setLine1Color] = React.useState<String>('danger');
     const [line2, setLine2] = React.useState<String>('');
@@ -56,6 +74,7 @@ const AddPoemModal: React.FC<Props> = ({ visible, setVisible }) => {
     const [line3, setLine3] = React.useState<String>('');
     const [line3Color, setLine3Color] = React.useState<String>('danger');
 
+    const [isHaiku, setIsHaiku] = React.useState<any>(null);
 
     React.useEffect(() => {
         if (syllable(line1) === 5) {
@@ -80,6 +99,14 @@ const AddPoemModal: React.FC<Props> = ({ visible, setVisible }) => {
             setLine3Color('danger');
         }
     }, [line3]);
+
+    React.useEffect(() => {
+        if (line1Color === 'success' && line2Color === 'success' && line3Color === 'success') {
+            setIsHaiku(true);
+        } else {
+            setIsHaiku(false);
+        }
+    }, [line1Color, line2Color, line3Color])
 
     return (
         <Modal
@@ -115,6 +142,23 @@ const AddPoemModal: React.FC<Props> = ({ visible, setVisible }) => {
                         >
                         
                         </Input>
+                        {
+                            isHaiku 
+                            ?
+                                <React.Fragment>
+                                    <Layout style={styles.iconContainer}>
+                                        <HaikuIcon  />
+                                    </Layout>
+                                    <Text style={styles.haikuIconText}>Haiku</Text>
+                                </React.Fragment>
+                            :
+                                <React.Fragment>
+                                    <Layout style={styles.iconContainer}>
+                                        <NonHaikuIcon />
+                                    </Layout>
+                                    <Text style={styles.iconText}>Free Form</Text>
+                                </React.Fragment>
+                        }
                         <Button onPress={() => setVisible(false)}>
                             SUBMIT
                         </Button>
@@ -134,6 +178,23 @@ const styles = StyleSheet.create({
     },
     textInput: {
         margin: 10
+    },
+    iconText: {
+        fontFamily: 'Acre-Medium',
+        fontSize: 14,
+        marginBottom: 20,
+        left: 19
+    },
+    haikuIconText: {
+        fontFamily: 'Acre-Medium',
+        fontSize: 14,
+        marginBottom: 20,
+        left: 32
+    },
+    iconContainer: {
+        height: 40,
+        width: 100,
+        marginBottom: 4
     }
 });
 

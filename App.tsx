@@ -12,7 +12,7 @@ import { default as mapping } from './mapping.json';
 import AppNavigator from './components/Navigator';
 
 const client = new ApolloClient({
-  uri: 'http://10.0.0.169:4000/',
+  uri: 'http://192.168.0.145:4000/',
 });
 
 export default function App() {
