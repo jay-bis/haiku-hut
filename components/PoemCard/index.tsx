@@ -1,6 +1,6 @@
 import React from 'react';
-import { View } from 'react-native';
-import { Button, Card, Layout, Text, Divider, List } from '@ui-kitten/components';
+import { View, StyleSheet } from 'react-native';
+import { Button, Card, Layout, Text, Divider, List, useTheme } from '@ui-kitten/components';
 
 
 export interface Props {
@@ -10,7 +10,7 @@ export interface Props {
     author: string,
     cardStyle: List<Object>,
     layoutStyle: Object
-    // isHaiku: boolean
+    isHaiku: boolean
 }
 
 export interface PropsHeader {
@@ -25,18 +25,54 @@ const Header: React.FC<PropsHeader> = ({title, author}) => (
     </View>
 )
 
-const PoemCard: React.FC<Props> = ({ title, content, createdAt, author, cardStyle, layoutStyle }) => (
-    <Layout
-        style={layoutStyle}
-    >
-        <Card //niuj
-            style={cardStyle}
-            header={(props) => <Header {...props} title={title} author={author} />}>
-            <Text style={{  fontFamily: 'Acre-Medium' }}>{content}</Text>
-            <Divider style={{ height: '10%', backgroundColor: 'transparent' }}/>
-            <Text>{Date.parse(createdAt)}</Text>
-        </Card>
-    </Layout>
-)
+const PoemCard: React.FC<Props> = ({ title, content, createdAt, author, cardStyle, layoutStyle, isHaiku }) => {
+
+    const theme = useTheme();
+
+    return (
+        <Layout
+            style={layoutStyle}
+        >
+            <Text style={[{ borderColor: theme['color-primary-transparent-500'] }, styles.poemTypeTip]}>
+                {
+                    isHaiku
+                    ? 'Haiku'
+                    : 'Free Form'
+            
+                }
+            </Text>
+            <Card
+                style={cardStyle}
+                header={(props) => <Header {...props} title={title} author={author} />}>
+                <Text style={{  fontFamily: 'Acre-Medium' }}>{content}</Text>
+                <Divider style={styles.divider}/>
+                <Text>{Date.parse(createdAt)}</Text>
+            </Card>
+        </Layout>
+    )
+}
+
+const styles = StyleSheet.create({
+    poemTypeTip: {
+        padding: 0,
+        alignSelf: 'center',
+        backgroundColor: '#ffffff',
+        borderStyle: 'solid',
+        borderWidth: 1,
+        fontFamily: 'Acre-Medium',
+        height: 24,
+        textAlign: 'center',
+        top: 12,
+        borderRadius: 6,
+        overflow: 'hidden',
+        zIndex: 9000,
+        paddingLeft: 5,
+        paddingRight: 5
+    },
+    divider: {
+        height: '10%',
+        backgroundColor: 'transparent'
+    }
+})
 
 export default PoemCard;

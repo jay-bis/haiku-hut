@@ -7,6 +7,7 @@ export const GET_POEMS_BY_TITLE = gql`
       title
       content
       createdAt
+      isHaiku
       author {
         name
       }

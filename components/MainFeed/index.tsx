@@ -87,6 +87,7 @@ const MainFeed: React.FC<Props> = () => {
                     content={item.content}
                     author={item.author.name}
                     createdAt={item.createdAt}
+                    isHaiku={item.isHaiku}
                   />
                 );
               }}
