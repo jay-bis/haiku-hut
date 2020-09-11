@@ -10,7 +10,7 @@ type Query {
 }
 
 type Mutation {
-    post(title: String!, content: String!): Poem!
+    post(title: String!, content: String!, isHaiku: Boolean!): Poem!
     signup(name: String!, password: String!, email: String!): AuthPayload
     login(email: String!, password: String!): AuthPayload
     createProfile(favpoem: String!, bio: String!): profile

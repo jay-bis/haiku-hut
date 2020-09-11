@@ -13,17 +13,18 @@ const post = (parent, args, context, info) => {
         data: {
             title: args.title,
             content: args.content,
-            User: {
+            author: {
                 connect: { id: userId }
-            }
+            },
+            isHaiku: args.isHaiku
         }
     })
    return newPoem
 }
 
 const signup = async (parent, args, context, info) => {
-    const password = await bcrypt.hash(args.password, 10)
-    const user = await context.prisma.user.create({ data: { name: args.name, email: args.email, passhash: args.password } })
+    const password = await bcrypt.hash(args.password, 10);
+    const user = await context.prisma.user.create({ data: { name: args.name, email: args.email, passhash: password } })
     const token = jwt.sign({ userId: user.id }, APP_SECRET)
     return {
       token,
@@ -37,7 +38,7 @@ const login = async (parent, args, context, info) => {
       throw new Error('No such user found')
     }
 
-    const valid = await bcrypt.compare(args.password, user.password)
+    const valid = await bcrypt.compare(args.password, user.passhash)
     if (!valid) {
       throw new Error('Invalid password')
     }
@@ -51,14 +52,14 @@ const login = async (parent, args, context, info) => {
 }
 
 const createProfile = async (parent, args, context, info) => {
+    const userId = getUserId(context)
+    
     const profile = context.prisma.profile.create({
         data: {
             favpoem: args.favpoem,
             bio: args.bio
         }
     })
-
-    const userId = getUserId(context)
 
     context.prisma.user.update({
         where: { id: userId },

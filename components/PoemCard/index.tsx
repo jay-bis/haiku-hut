@@ -44,7 +44,9 @@ const PoemCard: React.FC<Props> = ({ title, content, createdAt, author, cardStyl
             <Card
                 style={cardStyle}
                 header={(props) => <Header {...props} title={title} author={author} />}>
-                <Text style={{  fontFamily: 'Acre-Medium' }}>{content}</Text>
+                {content.split('\n').map((line) => (
+                    <Text style={styles.line} key={line}>{line}</Text>
+                ))}
                 <Divider style={styles.divider}/>
                 <Text>{Date.parse(createdAt)}</Text>
             </Card>
@@ -72,6 +74,10 @@ const styles = StyleSheet.create({
     divider: {
         height: '10%',
         backgroundColor: 'transparent'
+    },
+    line: {
+        fontFamily: 'Acre-Medium',
+        marginBottom: 5
     }
 })
 

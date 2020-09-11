@@ -1,17 +1,37 @@
 import React from 'react';
-import { StyleSheet, Animated } from 'react-native';
-import { Button, Card, Modal, Text, Input, Icon, Layout } from '@ui-kitten/components';
+import { StyleSheet, Animated, View } from 'react-native';
+import { Button, Card, Modal, Text, Input, Icon, Layout, Spinner } from '@ui-kitten/components';
+import { connect } from 'react-redux';
+import { post, clearPostStatus } from '../../actions/PostingActions.js';
 
 // old import
 const syllable = require('syllable');
 
+export interface State {
+    post: PostObject
+}
+
+export interface PostObject {
+    postLoading: Boolean,
+    successfulPost: Boolean
+}
+
 export interface Props {
     visible: Boolean,
-    setVisible: Function
+    setVisible: Function,
+    post: Function,
+    postLoading: Boolean,
+    successfulPost: Boolean,
+    clearPostStatus: Function
 }
 
 export interface PropsIcon {
     props?: Object
+}
+
+export interface PropsLoading {
+    postLoading: Boolean,
+    successfulPost: Boolean
 }
 
 const HaikuIcon: React.FC<PropsIcon> = props => (
@@ -30,7 +50,45 @@ const NonHaikuIcon: React.FC<PropsIcon> = props => (
     />
 )
 
-const AddPoemModal: React.FC<Props> = ({ visible, setVisible }) => {
+const ProgressIndicator: React.FC<PropsLoading> = ({ postLoading, successfulPost }) => {
+    if (postLoading) {
+        return (
+            <View style={styles.spinner}>
+                <Spinner size='small' status='basic'/>
+            </View>
+        )
+    }
+    if (successfulPost) {
+        return (
+            <View style={styles.successIcon}>
+                <Icon fill='#ffffff' name='checkmark-circle-2-outline' />
+            </View>
+        )
+    }
+    return null;
+}
+
+const formatPoemAndPost = (
+    line1: String, line2: String, line3: String,
+    status1: String, status2: String, status3: String,
+    title: String, postFn: Function, setError: Function) => {
+
+    setError(false);
+    if (line1 === '' || line2 === '' || line3 === '' || title === '') {
+        setError(true);
+        return;
+    }
+    const poem = line1 + '\n' + line2 + '\n' + line3;
+    let isHaiku;
+    if (status1 === 'success' && status2 === 'success' && status3 === 'success') {
+        isHaiku = true;
+    } else {
+        isHaiku = false;
+    }
+    postFn(title, poem, isHaiku);
+};
+
+const AddPoemModal: React.FC<Props> = ({ visible, setVisible, post, postLoading, successfulPost, clearPostStatus }) => {
 
     const fadeAnimation = React.useRef(new Animated.Value(0)).current
     const moveAnimation = React.useRef(new Animated.Value(0)).current
@@ -67,13 +125,14 @@ const AddPoemModal: React.FC<Props> = ({ visible, setVisible }) => {
         }]
     }
 
+    const [title, setTitle] = React.useState<String>('');
     const [line1, setLine1] = React.useState<String>('');
     const [line1Color, setLine1Color] = React.useState<String>('danger');
     const [line2, setLine2] = React.useState<String>('');
     const [line2Color, setLine2Color] = React.useState<String>('danger');
     const [line3, setLine3] = React.useState<String>('');
     const [line3Color, setLine3Color] = React.useState<String>('danger');
-
+    const [validationError, setValidationError] = React.useState<Boolean>(false);
     const [isHaiku, setIsHaiku] = React.useState<any>(null);
 
     React.useEffect(() => {
@@ -106,7 +165,16 @@ const AddPoemModal: React.FC<Props> = ({ visible, setVisible }) => {
         } else {
             setIsHaiku(false);
         }
-    }, [line1Color, line2Color, line3Color])
+    }, [line1Color, line2Color, line3Color]);
+
+    React.useEffect(() => {
+        if (successfulPost) {
+            setTimeout(() => {
+                clearPostStatus();
+                setVisible(false);
+            }, 1500);
+        }
+    }, [successfulPost]);
 
     return (
         <Modal
@@ -119,12 +187,16 @@ const AddPoemModal: React.FC<Props> = ({ visible, setVisible }) => {
                     <Card disabled={true}>
                         <Text style={styles.header}>Enter your poem in the lines below:</Text>
                         <Input
+                            onChangeText={nextVal => setTitle(nextVal)}
+                            label='Title'
+                            style={styles.textInput}
+                        ></Input>
+                        <Input
                             onChangeText={nextVal => setLine1(nextVal)}
                             label='Line 1'
                             style={styles.textInput}
                             status={line1Color}
                         >
-                        
                         </Input>
                         <Input
                             onChangeText={nextVal => setLine2(nextVal)}
@@ -159,8 +231,20 @@ const AddPoemModal: React.FC<Props> = ({ visible, setVisible }) => {
                                     <Text style={styles.iconText}>Free Form</Text>
                                 </React.Fragment>
                         }
-                        <Button onPress={() => setVisible(false)}>
-                            SUBMIT
+                        {
+                            validationError
+                            ?
+                                <Text style={styles.errorText}>Error: All lines must be filled!</Text>
+                            :
+                                null
+                        }
+                        <Button onPress={() => {
+                            formatPoemAndPost(line1, line2, line3, line1Color, line2Color, line3Color, title, post, setValidationError)
+                        }}
+                            status='primary'
+                            accessoryLeft={() => <ProgressIndicator postLoading={postLoading} successfulPost={successfulPost} />}    
+                        >
+                            {postLoading ? 'LOADING' : (successfulPost ? 'SUCCESS!' : 'SUBMIT')}
                         </Button>
                     </Card>
                 </Animated.View>
@@ -195,7 +279,31 @@ const styles = StyleSheet.create({
         height: 40,
         width: 100,
         marginBottom: 4
+    },
+    spinner: {
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    errorText: {
+        fontFamily: 'Acre-Medium',
+        color: 'red',
+        textAlign: 'center',
+        marginBottom: 10
+    },
+    successIcon: {
+        height: 28,
+        width: 28,
     }
 });
 
-export default AddPoemModal
+const mapStateToProps = (state: State) => ({
+    postLoading: state.post.postLoading,
+    successfulPost: state.post.successfulPost
+})
+
+const mapDispatchToProps = {
+    post,
+    clearPostStatus
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(AddPoemModal)
